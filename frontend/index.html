@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Telegram Studio: Member Purge & Auto Join Request Approver</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=6" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand-container">
+        <div class="brand-logo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2 L2 10.5 L10.5 13.5 L13.5 22 L21.5 2 Z"></path>
+            <path d="M10.5 13.5 L16.5 7.5"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Telegram Channel Management Studio</h1>
+          <p class="brand-subtitle">Cross-Channel Member Purging & Auto Join Request Approver</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Theme Switcher Button -->
+        <button id="themeToggleBtn" class="btn btn-outline btn-sm theme-toggle-btn" title="Switch Theme">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <span id="themeToggleLabel">Frutiger Aero</span>
+        </button>
+
+        <div id="authStatusBadge" class="status-badge disconnected">
+          <span class="status-dot"></span>
+          <span id="authStatusText">Checking Telegram Connection...</span>
+        </div>
+
+        <button id="authBtn" class="btn btn-secondary btn-sm">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+          <span id="authBtnLabel">Connect Account</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- App Navigation Tabs -->
+    <nav class="app-tabs-nav">
+      <button class="tab-btn active" data-target-tab="tab-remover">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <line x1="17" y1="11" x2="23" y2="11"></line>
+        </svg>
+        <span>Member Cross-Purge Studio</span>
+      </button>
+
+        <button class="tab-btn" data-target-tab="tab-requests">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="8.5" cy="7" r="4"></circle>
+          <polyline points="17 11 19 13 23 9"></polyline>
+        </svg>
+        <span>Auto Join Request Approver</span>
+        <span id="tabPendingBadge" class="tab-badge hidden">0</span>
+      </button>
+
+      <button class="tab-btn" data-target-tab="tab-wipeout">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+        </svg>
+        <span>Global Ban & Wipeout Shield</span>
+        <span id="tabBlacklistBadge" class="tab-badge hidden">0</span>
+      </button>
+    </nav>
+
+    <!-- Main Content Tabs -->
+    <main class="main-content">
+
+      
+      <!-- ================================================================= -->
+      <!-- TAB 1: Member Cross-Purge Studio -->
+      <!-- ================================================================= -->
+      <div id="tab-remover" class="tab-content active">
+        <!-- Channel Selection & Scan Card -->
+        <section class="card config-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="icon-bubble">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+              </div>
+              <div>
+                <h2 class="card-title">Channel & Group Configuration</h2>
+                <p class="card-description">Select your target channels to discover paid members still present in your free group.</p>
+              </div>
+            </div>
+            <button id="refreshDialogsBtn" class="btn btn-ghost btn-sm" title="Refresh Dialogs">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+              <span>Refresh Lists</span>
+            </button>
+          </div>
+
+          <div class="channel-picker-grid">
+            <!-- Paid Channel Picker -->
+            <div class="input-group">
+              <label class="input-label" for="paidChannelSelect">
+                <span class="label-badge paid-badge">Paid Lifetime</span>
+                Source Paid Channel (Reference)
+              </label>
+              <div class="select-wrapper">
+                <select id="paidChannelSelect" class="form-control select-dropdown">
+                  <option value="">Select your Paid Channel...</option>
+                </select>
+              </div>
+              <span class="field-hint">All subscribers in this channel will be cross-checked.</span>
+            </div>
+
+            <!-- Free Group Picker -->
+            <div class="input-group">
+              <label class="input-label" for="freeGroupSelect">
+                <span class="label-badge free-badge">Free Tier</span>
+                Target Free Group (To Purge)
+              </label>
+              <div class="select-wrapper">
+                <select id="freeGroupSelect" class="form-control select-dropdown">
+                  <option value="">Select your Free Group...</option>
+                </select>
+              </div>
+              <span class="field-hint">Overlapping members will be removed/banned from here.</span>
+            </div>
+          </div>
+
+          <div class="scan-action-bar">
+            <div class="safe-pacing-wrapper">
+              <label class="input-label-inline" for="safeDelay">
+                <span>Safe Ban Pacing:</span>
+                <input type="number" id="safeDelay" class="form-control number-input" value="1.5" step="0.1" min="0.5" max="10.0" />
+                <span class="unit">sec/user</span>
+              </label>
+              <span class="delay-tip" title="Telegram automatically rate limits fast ban actions. Pacing prevents FloodWait.">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                Auto-FloodWait Protection Active
+              </span>
+            </div>
+
+            <button id="startScanBtn" class="btn btn-primary btn-lg">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span id="scanBtnText">Scan & Compare Members</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- KPI Stats Row -->
+        <section id="kpiSection" class="kpi-grid">
+          <div class="kpi-card paid-kpi">
+            <div class="kpi-header">
+              <span class="kpi-label">Paid Channel Members</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </div>
+            </div>
+            <div id="paidCountVal" class="kpi-value">—</div>
+            <div id="paidChannelTitleVal" class="kpi-subtext">No scan executed</div>
+          </div>
+
+          <div class="kpi-card free-kpi">
+            <div class="kpi-header">
+              <span class="kpi-label">Free Group Members</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+            </div>
+            <div id="freeCountVal" class="kpi-value">—</div>
+            <div id="freeGroupTitleVal" class="kpi-subtext">No scan executed</div>
+          </div>
+
+          <div class="kpi-card overlap-kpi">
+            <div class="kpi-header">
+              <span class="kpi-label">Overlapping / Duplicates</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="22" y1="12" x2="18" y2="12"></line>
+                  <line x1="6" y1="12" x2="2" y2="12"></line>
+                  <line x1="12" y1="6" x2="12" y2="2"></line>
+                  <line x1="12" y1="22" x2="12" y2="18"></line>
+                </svg>
+              </div>
+            </div>
+            <div id="overlapCountVal" class="kpi-value warning-text">—</div>
+            <div id="overlapSubtext" class="kpi-subtext">Members present in both</div>
+          </div>
+
+          <div class="kpi-card safety-kpi">
+            <div class="kpi-header">
+              <span class="kpi-label">Admin Protection</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-value safe-text">ACTIVE</div>
+            <div class="kpi-subtext">Admins & Bots are auto-exempt</div>
+          </div>
+        </section>
+
+        <!-- Member Review & Removal Section -->
+        <section id="resultsSection" class="card table-card">
+          <div class="table-header-row">
+            <div>
+              <h3 class="card-title">Overlapping Paid Members Found in Free Group</h3>
+              <p class="card-description">These members currently have paid access and should be purged from your free group.</p>
+            </div>
+
+            <div class="table-tools">
+              <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="tableSearch" placeholder="Search by name, @username, or ID..." class="form-control" />
+              </div>
+
+              <button id="exportCsvBtn" class="btn btn-outline btn-sm">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Export CSV</span>
+              </button>
+
+              <button id="removeAllBtn" class="btn btn-danger btn-sm">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+                <span id="removeAllBtnText">Remove All Overlapping</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Table View -->
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="col-check">
+                    <input type="checkbox" id="selectAllCheckbox" title="Select / Deselect All" />
+                  </th>
+                  <th class="col-user">Telegram User</th>
+                  <th class="col-username">Username</th>
+                  <th class="col-id">User ID</th>
+                  <th class="col-status">Status</th>
+                  <th class="col-action">Action</th>
+                </tr>
+              </thead>
+              <tbody id="membersTableBody">
+                <tr class="empty-row">
+                  <td colspan="6">
+                    <div class="empty-state">
+                      <div class="empty-icon-svg">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                          <circle cx="11" cy="11" r="8"></circle>
+                          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                      </div>
+                      <h4>No Scan Results Yet</h4>
+                      <p>Select your Paid Channel and Free Group above, then click <strong>"Scan & Compare Members"</strong> to identify users.</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- TAB 2: Auto Join Request Approver -->
+      <!-- ================================================================= -->
+      <div id="tab-requests" class="tab-content">
+        <!-- Target Channel Selector & Approver Config Card -->
+        <section class="card config-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="icon-bubble join-icon-bubble">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="8.5" cy="7" r="4"></circle>
+                  <polyline points="17 11 19 13 23 9"></polyline>
+                </svg>
+              </div>
+              <div>
+                <h2 class="card-title">Join Requests & Auto-Pilot Approver</h2>
+                <p class="card-description">Instantly approve thousands of pending join requests or enable the auto-pilot background daemon.</p>
+              </div>
+            </div>
+            <button id="refreshRequestsBtn" class="btn btn-ghost btn-sm" title="Refresh Pending Requests">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+              <span>Refresh Count</span>
+            </button>
+          </div>
+
+          <div class="channel-picker-grid">
+            <!-- Channel Selector -->
+            <div class="input-group">
+              <label class="input-label" for="reqChannelSelect">
+                <span class="label-badge request-badge">Target Channel</span>
+                Channel / Group with Pending Requests
+              </label>
+              <div class="select-wrapper">
+                <select id="reqChannelSelect" class="form-control select-dropdown">
+                  <option value="">Select a Channel or Group...</option>
+                </select>
+              </div>
+              <span class="field-hint">Select the channel where users have requested to join via admin invite link.</span>
+            </div>
+
+            <!-- Auto-Pilot Settings -->
+            <div class="input-group">
+              <label class="input-label" for="autopilotInterval">
+                <span class="label-badge autopilot-badge">Auto-Pilot Daemon</span>
+                Check & Auto-Approve Frequency
+              </label>
+              <div class="select-wrapper">
+                <select id="autopilotInterval" class="form-control select-dropdown">
+                  <option value="15">Every 15 Seconds (Ultra Fast)</option>
+                  <option value="30" selected>Every 30 Seconds (Recommended)</option>
+                  <option value="60">Every 1 Minute</option>
+                  <option value="120">Every 2 Minutes</option>
+                  <option value="300">Every 5 Minutes</option>
+                </select>
+              </div>
+              <span class="field-hint">Automatically clears newly incoming join requests in background.</span>
+            </div>
+          </div>
+
+          <div class="scan-action-bar">
+            <div class="safe-pacing-wrapper">
+              <button id="toggleAutopilotBtn" class="btn btn-secondary">
+                <span class="status-dot autopilot-dot"></span>
+                <span id="autopilotBtnLabel">Start Auto-Pilot Daemon</span>
+              </button>
+              <span class="delay-tip" title="Background loop continuously auto-approves requests as they arrive.">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                Hands-Free Background Approver
+              </span>
+            </div>
+
+            <div class="action-btn-group">
+              <button id="streamApproveBtn" class="btn btn-outline">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="8" y1="6" x2="21" y2="6"></line>
+                  <line x1="8" y1="12" x2="21" y2="12"></line>
+                  <line x1="8" y1="18" x2="21" y2="18"></line>
+                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+                <span>Live Stream Approve</span>
+              </button>
+
+              <button id="turboApproveBtn" class="btn btn-primary btn-lg">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                <span id="turboApproveBtnText">Turbo Approve All Requests</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Join Requests KPI Row -->
+        <section class="kpi-grid">
+          <div class="kpi-card req-pending-kpi">
+            <div class="kpi-header">
+              <span class="kpi-label">Pending Join Requests</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div id="reqPendingCountVal" class="kpi-value warning-text">—</div>
+            <div id="reqChannelTitleVal" class="kpi-subtext">Select a channel to check</div>
+          </div>
+
+          <div class="kpi-card req-approved-kpi">
+            <div class="kpi-header">
+              <span class="kpi-label">Approved This Session</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div id="reqApprovedCountVal" class="kpi-value safe-text">0</div>
+            <div class="kpi-subtext">Total approved requests</div>
+          </div>
+
+          <div class="kpi-card req-autopilot-kpi">
+            <div class="kpi-header">
+              <span class="kpi-label">Auto-Pilot Mode</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+              </div>
+            </div>
+            <div id="autopilotStatusVal" class="kpi-value font-mono">IDLE</div>
+            <div id="autopilotSubtextVal" class="kpi-subtext">Background daemon inactive</div>
+          </div>
+
+          <div class="kpi-card safety-kpi">
+            <div class="kpi-header">
+              <span class="kpi-label">FloodWait Shield</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-value safe-text">ACTIVE</div>
+            <div class="kpi-subtext">Telegram rate limiting protected</div>
+          </div>
+        </section>
+
+        <!-- Pending Leads Table Section -->
+        <section class="card table-card">
+          <div class="table-header-row">
+            <div>
+              <h3 class="card-title">Pending Join Request Applicants</h3>
+              <p class="card-description">Users waiting for approval. Approve individually, in bulk, or use Turbo Approve above.</p>
+            </div>
+
+            <div class="table-tools">
+              <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="requestsTableSearch" placeholder="Search applicant by name, @username, or ID..." class="form-control" />
+              </div>
+
+              <button id="exportRequestsCsvBtn" class="btn btn-outline btn-sm">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Export CSV</span>
+              </button>
+
+              <button id="loadRequestsListBtn" class="btn btn-secondary btn-sm">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span>Load Applicants List</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Table View -->
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="col-check">
+                    <input type="checkbox" id="selectAllReqCheckbox" title="Select / Deselect All" />
+                  </th>
+                  <th class="col-user">Applicant</th>
+                  <th class="col-username">Username</th>
+                  <th class="col-id">User ID</th>
+                  <th class="col-status">Requested Time</th>
+                  <th class="col-action">Action</th>
+                </tr>
+              </thead>
+              <tbody id="requestsTableBody">
+                <tr class="empty-row">
+                  <td colspan="6">
+                    <div class="empty-state">
+                      <div class="empty-icon-svg">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                          <circle cx="8.5" cy="7" r="4"></circle>
+                          <polyline points="17 11 19 13 23 9"></polyline>
+                        </svg>
+                      </div>
+                      <h4>No Requests Loaded</h4>
+                      <p>Select your channel above and click <strong>"Load Applicants List"</strong> or use <strong>"Turbo Approve All"</strong>.</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- TAB 3: Global Ban & Total Wipeout Shield -->
+      <!-- ================================================================= -->
+      <div id="tab-wipeout" class="tab-content">
+        <!-- Target Identification & Inspection Card -->
+        <section class="card config-card hazard-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="icon-bubble nuke-icon-bubble">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                </svg>
+              </div>
+              <div>
+                <h2 class="card-title">Target Bad Actor Identification</h2>
+                <p class="card-description">Specify the bad actor's username, User ID, or phone to execute coordinated digital exclusion.</p>
+              </div>
+            </div>
+            <div class="delay-tip protection-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              <span>Admin & Self-Harm Shield Active</span>
+            </div>
+          </div>
+
+          <div class="target-input-grid">
+            <div class="input-group">
+              <label class="input-label" for="nukeTargetInput">
+                <span class="label-badge nuke-badge">Target Handle or ID</span>
+                Telegram @username, Numeric ID, or Phone
+              </label>
+              <div class="target-search-bar">
+                <input type="text" id="nukeTargetInput" class="form-control" placeholder="e.g. @username or 123456789 or +1234567890" />
+                <button id="resolveTargetBtn" class="btn btn-secondary">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <span id="resolveTargetBtnText">Resolve & Inspect</span>
+                </button>
+              </div>
+              <span class="field-hint">Resolves live Telegram profile and verifies identity before executing exclusion.</span>
+            </div>
+
+            <!-- Target User Preview Card -->
+            <div id="targetPreviewCard" class="target-preview-box hidden">
+              <div class="target-avatar" id="targetAvatar">U</div>
+              <div class="target-meta">
+                <div class="target-name-row">
+                  <h4 id="targetFullName">User Name</h4>
+                  <span id="targetTypeBadge" class="user-type-pill">User</span>
+                </div>
+                <div class="target-sub-meta">
+                  <span id="targetUsername" class="target-uname font-mono">@username</span>
+                  <span class="meta-separator">•</span>
+                  <span id="targetIdBadge" class="target-uid font-mono">ID: 12345678</span>
+                </div>
+              </div>
+              <div class="target-ready-tag">
+                <span class="status-dot green"></span>
+                <span>Target Verified</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wipeout Action Configurator Checklist -->
+          <div class="nuke-options-container">
+            <div class="nuke-options-header">
+              <h3>Total Digital Invisibility & Wipeout Configuration</h3>
+              <p class="card-description">Select the actions to execute in a single coordinated, systematic operation:</p>
+            </div>
+
+            <div class="nuke-checklist-grid">
+              <!-- Option 1: Multi-Channel Ban -->
+              <label class="nuke-check-card" for="optBanChats">
+                <input type="checkbox" id="optBanChats" checked />
+                <div class="check-card-body">
+                  <div class="check-title-row">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                    </svg>
+                    <span class="check-card-title">Multi-Channel & Group Permanent Ban</span>
+                  </div>
+                  <p class="check-card-desc">Permanently bans & kicks target from ALL channels and groups where you are Owner OR Admin.</p>
+                </div>
+              </label>
+
+              <!-- Option 2: Purge Messages -->
+              <label class="nuke-check-card" for="optPurgeMessages">
+                <input type="checkbox" id="optPurgeMessages" checked />
+                <div class="check-card-body">
+                  <div class="check-title-row">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    <span class="check-card-title">Universal Message History Vaporization</span>
+                  </div>
+                  <p class="check-card-desc">Deletes every past message, photo, link, and reply ever sent by this target across all your groups.</p>
+                </div>
+              </label>
+
+              <!-- Option 3: 2-Way DM Wipeout -->
+              <label class="nuke-check-card" for="optWipeDm">
+                <input type="checkbox" id="optWipeDm" checked />
+                <div class="check-card-body">
+                  <div class="check-title-row">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                      <line x1="9" y1="9" x2="15" y2="15"></line>
+                      <line x1="15" y1="9" x2="9" y2="15"></line>
+                    </svg>
+                    <span class="check-card-title">2-Way Private Chat Erasure (Revoke=True)</span>
+                  </div>
+                  <p class="check-card-desc">Wipes direct message history for both parties so they have zero conversation trail or profile access.</p>
+                </div>
+              </label>
+
+              <!-- Option 4: Personal Contact Block -->
+              <label class="nuke-check-card" for="optBlockContact">
+                <input type="checkbox" id="optBlockContact" checked />
+                <div class="check-card-body">
+                  <div class="check-title-row">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="8.5" cy="7" r="4"></circle>
+                      <line x1="18" y1="8" x2="23" y2="13"></line>
+                      <line x1="23" y1="8" x2="18" y2="13"></line>
+                    </svg>
+                    <span class="check-card-title">Telegram Account Block & Contact Severing</span>
+                  </div>
+                  <p class="check-card-desc">Blocks direct PMs, calls, hides your bio/avatar, and severs mutual contact synchronization.</p>
+                </div>
+              </label>
+
+              <!-- Option 5: Rotate Invite Links -->
+              <label class="nuke-check-card" for="optRotateLinks">
+                <input type="checkbox" id="optRotateLinks" />
+                <div class="check-card-body">
+                  <div class="check-title-row">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    </svg>
+                    <span class="check-card-title">Invalidate & Rotate Saved Invite Links</span>
+                  </div>
+                  <p class="check-card-desc">Revokes active primary invite links across owned channels so any links saved by the bad actor expire immediately.</p>
+                </div>
+              </label>
+
+              <!-- Option 6: Blacklist Sentinel -->
+              <label class="nuke-check-card" for="optBlacklist">
+                <input type="checkbox" id="optBlacklist" checked />
+                <div class="check-card-body">
+                  <div class="check-title-row">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      <polyline points="9 12 12 15 15 9"></polyline>
+                    </svg>
+                    <span class="check-card-title">Add to Persistent Blacklist Sentinel</span>
+                  </div>
+                  <p class="check-card-desc">Auto-Pilot Daemon will automatically reject and re-ban this user if they ever attempt a join request.</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="scan-action-bar nuke-action-bar">
+            <div class="safe-pacing-wrapper">
+              <span class="delay-tip danger-tip">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                Permanent Security Exclusion
+              </span>
+            </div>
+
+            <button id="executeNukeBtn" class="btn btn-danger btn-lg nuke-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+              </svg>
+              <span id="executeNukeBtnText">EXECUTE TOTAL DIGITAL WIPEOUT</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Wipeout KPI Stats Row -->
+        <section class="kpi-grid">
+          <div class="kpi-card nuke-blacklisted-kpi">
+            <div class="kpi-header">
+              <span class="kpi-label">Blacklisted Bad Actors</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                </svg>
+              </div>
+            </div>
+            <div id="blTotalCountVal" class="kpi-value danger-text">0</div>
+            <div class="kpi-subtext">Registered bad actors in database</div>
+          </div>
+
+          <div class="kpi-card nuke-channels-kpi">
+            <div class="kpi-header">
+              <span class="kpi-label">Protected Channels & Groups</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+            </div>
+            <div id="blProtectedChatsVal" class="kpi-value safe-text">—</div>
+            <div class="kpi-subtext">Owned & Admin dialogs protected</div>
+          </div>
+
+          <div class="kpi-card nuke-sentinel-kpi">
+            <div class="kpi-header">
+              <span class="kpi-label">Sentinel Auto-Guard</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <polyline points="9 12 12 15 15 9"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-value safe-text font-mono">ACTIVE</div>
+            <div class="kpi-subtext">Auto-rejects blacklisted join requests</div>
+          </div>
+
+          <div class="kpi-card safety-kpi">
+            <div class="kpi-header">
+              <span class="kpi-label">Invisibility Level</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-value safe-text">MAXIMUM</div>
+            <div class="kpi-subtext">Full 7-layer exclusion active</div>
+          </div>
+        </section>
+
+        <!-- Blacklist Sentinel Table Section -->
+        <section class="card table-card">
+          <div class="table-header-row">
+            <div>
+              <h3 class="card-title">Blacklist Sentinel & Bad Actor Database</h3>
+              <p class="card-description">Users registered on your blacklist. Auto-Pilot silently rejects any future join requests from these accounts.</p>
+            </div>
+
+            <div class="table-tools">
+              <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="blacklistSearch" placeholder="Search blacklist by name, @username, ID..." class="form-control" />
+              </div>
+
+              <button id="refreshBlacklistBtn" class="btn btn-ghost btn-sm" title="Refresh Blacklist">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+                <span>Refresh List</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="col-user">Bad Actor</th>
+                  <th class="col-username">Username</th>
+                  <th class="col-id">User ID</th>
+                  <th class="col-status">Reason / Notes</th>
+                  <th class="col-status">Blacklisted Date</th>
+                  <th class="col-action">Action</th>
+                </tr>
+              </thead>
+              <tbody id="blacklistTableBody">
+                <tr class="empty-row">
+                  <td colspan="6">
+                    <div class="empty-state">
+                      <div class="empty-icon-svg" style="color: var(--success);">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                          <polyline points="9 12 12 15 15 9"></polyline>
+                        </svg>
+                      </div>
+                      <h4 class="safe-text">Blacklist is Clear</h4>
+                      <p>No bad actors are currently registered. Target any abusive user above to execute total wipeout.</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+    </main>
+
+
+    <!-- Floating Bulk Action Bar (For Purge) -->
+    <div id="bulkActionBar" class="bulk-action-bar hidden">
+      <div class="bulk-content">
+        <div class="bulk-info">
+          <span class="bulk-badge" id="selectedCountBadge">0</span>
+          <span class="bulk-label">Members Selected for Removal</span>
+        </div>
+        <div class="bulk-buttons">
+          <button id="deselectAllBtn" class="btn btn-ghost btn-sm">Deselect All</button>
+          <button id="removeSelectedBtn" class="btn btn-danger">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+            <span id="removeSelectedBtnText">Remove 0 Selected Members</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Bulk Action Bar (For Join Requests) -->
+    <div id="bulkReqActionBar" class="bulk-action-bar req-bulk-bar hidden">
+      <div class="bulk-content">
+        <div class="bulk-info">
+          <span class="bulk-badge req-badge-color" id="selectedReqCountBadge">0</span>
+          <span class="bulk-label">Applicants Selected for Approval</span>
+        </div>
+        <div class="bulk-buttons">
+          <button id="deselectAllReqBtn" class="btn btn-ghost btn-sm">Deselect All</button>
+          <button id="approveSelectedReqBtn" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <span id="approveSelectedReqBtnText">Approve 0 Selected Applicants</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Telegram Login / Connect Modal -->
+  <div id="authModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <h3>Telegram Client Authorization</h3>
+        </div>
+        <button id="closeAuthModalBtn" class="modal-close-btn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-instruction">Connect your Telegram account with admin rights to access member lists.</p>
+
+        <!-- Step 1: Phone / API Credentials -->
+        <div id="authStep1" class="auth-step">
+          <div class="input-group">
+            <label class="input-label" for="authPhone">Phone Number (International Format)</label>
+            <input type="text" id="authPhone" class="form-control" placeholder="+1234567890" />
+          </div>
+
+          <div class="credentials-toggle-row">
+            <button type="button" id="toggleApiCredsBtn" class="link-btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              API ID & Hash Settings
+            </button>
+          </div>
+
+          <div id="apiCredsContainer" class="hidden api-creds-box">
+            <div class="input-group">
+              <label class="input-label" for="authApiId">API ID</label>
+              <input type="text" id="authApiId" class="form-control font-mono" placeholder="12345678" />
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="authApiHash">API Hash</label>
+              <input type="text" id="authApiHash" class="form-control font-mono" placeholder="your_telegram_api_hash" />
+            </div>
+          </div>
+
+          <button id="sendCodeBtn" class="btn btn-primary btn-full mt-4">
+            <span>Send Telegram Verification Code</span>
+          </button>
+        </div>
+
+        <!-- Step 2: Code Verification -->
+        <div id="authStep2" class="auth-step hidden">
+          <div class="alert alert-info">
+            Telegram sent a confirmation code to your Telegram app or SMS. Please enter it below.
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="authCode">Verification Code</label>
+            <input type="text" id="authCode" class="form-control text-center font-mono font-lg" placeholder="12345" />
+          </div>
+
+          <div class="input-group mt-3">
+            <label class="input-label" for="auth2FaPassword">Two-Step Verification (2FA) Password <span class="text-muted">(Optional)</span></label>
+            <input type="password" id="auth2FaPassword" class="form-control" placeholder="Enter only if 2FA is enabled" />
+          </div>
+
+          <button id="verifyCodeBtn" class="btn btn-primary btn-full mt-4">
+            <span>Verify & Sign In</span>
+          </button>
+
+          <button id="backToStep1Btn" class="btn btn-ghost btn-sm btn-full mt-2">
+            <span>Change Phone Number</span>
+          </button>
+        </div>
+
+        <div id="authMessage" class="status-msg hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Operation Progress Modal (Used for Purge & Join Approval) -->
+  <div id="progressModal" class="modal-overlay hidden">
+    <div class="modal-card modal-card-lg vista-window">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-icon pulse-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <div>
+            <h3 id="progressModalTitle">Executing Action</h3>
+            <p id="progressModalSub" class="modal-sub">Real-time operation with rate limiting protection</p>
+          </div>
+        </div>
+        <button id="dismissProgressModalBtn" class="modal-close-btn" title="Close modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+          <div class="progress-info-row">
+            <span id="progressStatusLabel">Initializing...</span>
+            <span id="progressPercentLabel">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="progressBarFill" class="progress-fill" style="width: 0%;"></div>
+          </div>
+          <div class="progress-stats-row">
+            <span id="progressCounts">Processed: 0 / 0</span>
+            <span id="progressSuccessCount" class="safe-text">Success: 0</span>
+            <span id="progressFailCount" class="danger-text">Failed: 0</span>
+          </div>
+        </div>
+
+        <!-- Terminal Logs -->
+        <div class="terminal-container">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <span class="terminal-title">Real-Time Execution Stream</span>
+          </div>
+          <div id="terminalLogBox" class="terminal-logs font-mono">
+            <div class="log-line info">Ready to stream actions...</div>
+          </div>
+        </div>
+
+        <div class="modal-footer mt-4">
+          <button id="closeProgressModalBtn" class="btn btn-primary btn-full hidden">
+            <span>Done & Close</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=6"></script>
+</body>
+</html>

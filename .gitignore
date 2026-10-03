@@ -1,0 +1,47 @@
+# =============================================================================
+# Telegram Channel Management Tool - TCMT (.gitignore)
+# =============================================================================
+
+# Telegram Sessions, Authentication & Personal Records
+session/
+*.session
+*.session-journal
+config.json
+blacklist.json
+
+# Exported CSV / User Data
+*.csv
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+
+# IDE & Editor Configurations
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs & Diagnostics
+*.log
