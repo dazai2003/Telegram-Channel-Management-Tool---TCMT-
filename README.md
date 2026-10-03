@@ -7,7 +7,7 @@ An all-in-one Telegram administration suite for cross-channel member auditing, a
 ## Key Features
 
 ### 1. Member Cross-Purge Studio
-* **Duplicate Detection**: Cross-references subscribers in a **Source Paid/VIP Channel** against a **Target Free Group**.
+* **Duplicate Detection**: Cross-references subscribers in a **Source Channel** against a **Target Group**.
 * **One-Click Multi-Member Removal**: Permanently bans overlapping members from free groups to prevent unauthorized access.
 * **Safe Ban Pacing & FloodWait Protection**: Configurable delay per removal with automatic pause-and-resume handling when Telegram rate limits are encountered.
 * **Admin & Bot Safety Shield**: Automatically exempts administrators, creators, and bots from accidental purging.
